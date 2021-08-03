@@ -1,14 +1,15 @@
-from users.authentication import gernerate_acess_token
 from users.serializers import UserSerializer
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions, serializers, viewsets
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer
-from .models import User
-from .authentication import gernerate_acess_token
+from .serializers import RoleSerializer, UserSerializer, PermissionSerializer 
+from .models import User, Permission, Role
+from .authentication import JWTAuthentication, generate_access_token
+
 
 @api_view(['POST'])
 def register(request):
@@ -37,7 +38,7 @@ def login(request):
 
     response = Response()
 
-    token = gernerate_acess_token(user)
+    token = generate_access_token(user)
     response.set_cookie(key='jwt', value=token, httponly=True)
     response.data = {
         'jwt': token
@@ -45,8 +46,20 @@ def login(request):
 
     return response
 
+@api_view(['POST'])
+def logout(_):
+    response = Response()
+    response.delete_cookie(key='jwt')
+    response.data = {
+        'message': 'Sucess',
+    }
+
+    return response
+
+
+
 class AuthenticatedUser(APIView):
-    authentication_classes = []
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -58,9 +71,36 @@ class AuthenticatedUser(APIView):
 
 
 
+class PermissionAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-@api_view(['GET'])
-def users(request):
-    serializer = UserSerializer(User.objects.all(), many=True)
-    return Response(serializer.data)
+    def get(self, request):
+        serializer = PermissionSerializer(Permission.objects.all(), many=True)
 
+        return Response({
+            'data': serializer.data
+        })
+
+class RoleViewSet(viewsets.ViewSet):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        serializer = RoleSerializer(Role.objects.all(), many=True)
+
+        return Response({
+            'data': serializer.data
+        })
+
+    def create(self, request):
+        pass
+
+    def retrieve(self, request, pk=None):
+        pass
+
+    def update(self, request, pk=None):
+        pass
+
+    def destroy(self, request, pk=None):
+        pass

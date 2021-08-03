@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 
-def gernerate_acess_token(user):
+def generate_access_token(user):
     payload = {
         'user_id': user.id,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
@@ -27,12 +27,13 @@ class JWTAuthentication(BaseAuthentication):
         except jwt.ExpiredSignatureError:
             raise exceptions.AuthenticationFailed('unauthenticated')
         
-        user = get_user_model().object.filter(id=payload['user_id']).first()
+        user = get_user_model().objects.filter(id=payload['user_id']).first()
 
         if user is None:
             raise exceptions.AuthenticationFailed('user not found')
 
-        return user
+        return (user, None)
+
 
 
 
