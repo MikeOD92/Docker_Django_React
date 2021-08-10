@@ -1,6 +1,6 @@
 from users.models import Permission
 from django.urls import path
-from .views import PermissionAPIView, RoleViewSet, login, register, AuthenticatedUser, logout, UserGenericAPIView
+from .views import PermissionAPIView, ProfileInfoAPIView, ProfilePasswordAPIView, RoleViewSet, login, register, AuthenticatedUser, logout, UserGenericAPIView
 
 urlpatterns = [
     path('register', register),
@@ -17,6 +17,8 @@ urlpatterns = [
         'put':'update',
         'delete':'destroy'
     })),
+    path('users/info', ProfileInfoAPIView.as_view()),
+    path('users/password', ProfilePasswordAPIView.as_view()),
     path('users', UserGenericAPIView.as_view()),
-    path('users/<str:pk>', UserGenericAPIView.as_view())
+    path('users/<str:pk>', UserGenericAPIView.as_view()),
 ]

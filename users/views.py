@@ -64,10 +64,11 @@ class AuthenticatedUser(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        data = UserSerializer(request.user).data
+        data['permissions'] = [p['name'] for p in data ['role']['permissions']]
 
         return Response({
-            'data': serializer.data
+            'data': data
         })
 
 
@@ -155,9 +156,39 @@ class UserGenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.
 
     def put(self, request, pk=None):
         if request.data['role_id']:
-            return Response({
-                'data': self.partial_update(request, pk).data
+            request.data.update({
+                'role': request.data['role_id']
             })
+
+        return Response({
+                'data': self.partial_update(request, pk).data
+        })
 
     def delete(self, request, pk=None):
         return self.destroy(request, pk)
+
+class ProfileInfoAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+class ProfilePasswordAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = request.user
+
+        if request.data['password'] != request.data['password_confirm']:
+            raise exceptions.ValidationError('Passwords do not match')
+
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
