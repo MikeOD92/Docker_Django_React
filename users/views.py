@@ -16,6 +16,7 @@ from .authentication import JWTAuthentication, generate_access_token
 @api_view(['POST'])
 def register(request):
     data = request.data
+    data["role"] = 1
 
     if data['password'] != data['password_confirm']:
         raise exceptions.APIException('Passwords do not match.')

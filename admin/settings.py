@@ -137,7 +137,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

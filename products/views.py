@@ -13,7 +13,7 @@ from django.core.files.storage import default_storage
 # Create your views here.
 class ProductGenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]    
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
