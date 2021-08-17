@@ -144,9 +144,10 @@ class UserGenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.
                 'data': self.retrieve(request, pk).data
             })
 
-        return Response({
-            'data': self.list(request).data
-            })
+        return self.list(request)
+        # return Response({
+        #     'data': self.list(request).data
+        #     })
 
     def post(self, request):
         request.data.update({
