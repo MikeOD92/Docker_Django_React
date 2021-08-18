@@ -1,6 +1,4 @@
-from django.db.models.query import QuerySet
 from rest_framework import serializers
-from rest_framework.fields import ChoiceField
 from .models import Permission, User, Role
 
 class PermissionSerializer(serializers.ModelSerializer):
@@ -55,9 +53,9 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
-        if password is not None:
-            instance.set_password(password)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     password = validated_data.pop('password', None)
+    #     if password is not None:
+    #         instance.set_password(password)
+    #     instance.save()
+    #     return instance
